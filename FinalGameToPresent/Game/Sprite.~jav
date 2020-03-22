@@ -1,0 +1,62 @@
+import java.awt.Image;
+import java.awt.Graphics;
+
+public class Sprite
+{
+   int x;
+   int y;
+
+   Animation[] animation;
+
+   int pose = 0;
+
+
+
+   public Sprite(int x, int y, String file, String[] action, int count, int duration)
+   {
+      this.x = x;
+      this.y = y;
+
+      animation = new Animation[action.length];
+
+      for(int i = 0; i < action.length; i++)
+
+         animation[i] = new Animation(file + action[i]+"_", count, duration);
+   }
+
+   public void moveUpBy(int dy)
+   {
+      y += dy;
+
+      pose = 0;
+   }
+   public void moveDownBy(int dy)
+   {
+      y += dy;
+
+      pose = 1;
+   }
+   public void moveLeftBy(int dx)
+   {
+      x += dx;
+
+      pose = 2;
+   }
+   public void moveRightBy(int dx)
+   {
+      x += dx;
+
+      pose = 3;
+   }
+   public void moveBy(int dx, int dy)
+   {
+      x += dx;
+      y += dy;
+   }
+
+
+   public void draw(Graphics g)
+   {
+      g.drawImage(animation[pose].nextImage(), x, y, null);
+   }
+}

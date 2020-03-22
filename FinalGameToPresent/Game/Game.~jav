@@ -1,0 +1,211 @@
+import java.applet.Applet;
+import java.awt.event.*;
+import java.awt.*;
+
+public class Game extends Applet implements KeyListener, Runnable, MouseListener, MouseMotionListener
+{
+
+   String[] action = {"up", "dn", "lt","rt"};
+   Sprite soldier = new Sprite(10, 500,"g_", action, 5, 10);
+
+   Image image = Toolkit.getDefaultToolkit().getImage("g_dn_0.gif");
+
+   Animation anim1 = new Animation("g_lt_", 5,10);
+   Animation anim2 = new Animation("g_rt_", 5,10);
+   Animation anim3 = new Animation("g_up_", 5,10);
+   Animation anim4 = new Animation("g_dn_", 5,10);
+
+   Rect r = new Rect(50, 50, 100, 100);
+
+   Rect r1 = new Rect(400, 400, 300, 200);
+
+   Tank[] tank = new Tank[10];
+
+   Tank activeTank;
+
+   Thread t;
+
+   boolean lt_Pressed = false;
+   boolean rt_Pressed = false;
+   boolean up_Pressed = false;
+   boolean dn_Pressed = false;
+
+
+   boolean overlap = false;
+
+   int mx;
+   int my;
+
+
+   public void init()
+   {
+      for(int i = 0; i < tank.length; i++)
+
+         tank[i] = new Tank(500, 100, 90);
+
+
+      activeTank = tank[0];
+
+
+      requestFocus();
+      addKeyListener(this);
+
+      addMouseListener(this);
+      addMouseMotionListener(this);
+
+      t = new Thread(this);
+
+      t.start();
+   }
+
+   public void run()
+   {
+      while(true)
+      {
+
+         if(lt_Pressed){   soldier.moveBy(-2,  0);   }
+         if(rt_Pressed){   soldier.moveBy( 2,  0);   }
+         if(up_Pressed){   soldier.moveBy( 0, -2);   }
+         if(dn_Pressed){   soldier.moveBy( 0,  2);   }
+
+/*
+         if(lt_Pressed){   activeTank.rotateLeftBy(6);    }
+         if(rt_Pressed){   activeTank.rotateRightBy(6);   }
+         if(up_Pressed){   activeTank.moveForwardBy(5);   }
+         if(dn_Pressed){   activeTank.moveBy(0, 10);      }
+//*/
+
+         repaint();
+
+         try
+         {
+             t.sleep(15);
+         }
+         catch(Exception x){}
+      }
+
+   }
+
+   public void paint(Graphics g)
+   {
+      soldier.draw(g);
+
+      g.drawImage(anim1.nextImage(),550, 350, this);
+      g.drawImage(anim2.nextImage(),600, 350, this);
+      g.drawImage(anim3.nextImage(),650, 350, this);
+      g.drawImage(anim4.nextImage(),700, 350, this);
+
+      g.drawImage(image,500, 350, this);
+
+      g.drawImage(image, 100, 100, 300, 500, this);
+
+      r.draw(g);
+
+      r1.draw(g);
+
+      for(int i = 0; i < tank.length; i++)
+
+         tank[i].draw(g);
+
+
+
+      if (overlap)        g.drawString("overlap", mx, my);
+      else                g.drawString("-------", mx, my);
+   }
+
+   public void mouseMoved(MouseEvent e)
+   {
+/*      mx = e.getX();
+      my = e.getY();
+
+      mouse_inside = false;
+
+      for(int i = 0; i < tank.length; i++)
+      {
+        mouse_inside = tank[i].contains(mx, my);
+
+        if(mouse_inside)  break;
+      }
+*/   }
+
+   public void mouseDragged(MouseEvent e)
+   {
+      int mx = e.getX();
+      int my = e.getY();
+
+      int dx = mx - this.mx;
+      int dy = my - this.my;
+
+      if (r.held)  r.moveBy(dx, dy);
+
+      this.mx = mx;
+      this.my = my;
+
+
+
+      overlap = r.overlaps(r1);
+   }
+
+
+
+   public void mousePressed(MouseEvent e)
+   {
+      mx = e.getX();
+      my = e.getY();
+
+      if(r.contains(mx, my))  r.grab();
+
+
+    /*
+      for(int i = 0; i < tank.length; i++)
+
+         if(tank[i].contains(mx, my))  activeTank = tank[i];
+    //*/
+   }
+
+   public void mouseReleased(MouseEvent e)
+   {
+      r.drop();
+   }
+
+   public void mouseClicked(MouseEvent e)
+   {
+
+   }
+
+   public void mouseEntered(MouseEvent e)
+   {
+
+   }
+
+   public void mouseExited(MouseEvent e)
+   {
+
+   }
+
+
+
+   public void keyPressed(KeyEvent e)
+   {
+      int code = e.getKeyCode();
+
+      if(code == e.VK_LEFT)     lt_Pressed = true;
+      if(code == e.VK_RIGHT)    rt_Pressed = true;
+      if(code == e.VK_UP)       up_Pressed = true;
+      if(code == e.VK_DOWN)     dn_Pressed = true;
+   }
+
+   public void keyReleased(KeyEvent e)
+   {
+      int code = e.getKeyCode();
+
+      if(code == e.VK_LEFT)     lt_Pressed = false;
+      if(code == e.VK_RIGHT)    rt_Pressed = false;
+      if(code == e.VK_UP)       up_Pressed = false;
+      if(code == e.VK_DOWN)     dn_Pressed = false;
+   }
+
+   public void keyTyped(KeyEvent e) {   }
+
+
+}
